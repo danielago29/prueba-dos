@@ -1,0 +1,58 @@
+<?php
+    namespace App;
+    class Database{
+        private $conn;
+        protected static $settings = Array(
+            "mysql" => Array(
+                'driver' => 'mysql',
+                'host' => 'localhost',
+                'username' => 'root',
+                'database' => 'filtro',
+                'password' => 'Danielita29',
+                'collation' => 'utf8_unicode_ci',
+                'flags' =>[
+                    //Turn off persistent connections
+                    \PDO::ATTR_PERSISTENT => false,
+                    //Enable exceptions
+                    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                    //Emulate prepares statements
+                    \PDO::ATTR_EMULATE_PREPARES => true,
+                    //Set default fetch mode to array
+                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                    //Set character set
+                    \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci'
+
+                ]
+
+
+
+            )
+        );
+
+        public function __construct($args = []){
+            $this->conn = $args ['conn'] ?? null;
+        }
+
+        public function getConnection($dbKey){
+            $dbConfig = self::$settings [$dbKey];
+            $this->conn = null;
+            $dsn = "{$dbConfig['driver']}:host={$dbConfig['host']};dbname={$dbConfig['database']}";
+            try {
+                $this -> conn = new \PDO($dsn,$dbConfig['username'],$dbConfig['password'],$dbConfig['flags']);
+                echo "okkkk";
+                }catch(\PDOException $exception){
+                    $error = [[
+                        'error' => $exception -> getMessage(),
+                        'message' => 'Error al momento de establecer conexion'
+                    ]];
+                    return $error;
+                }
+                return $this->conn;
+
+        }
+        
+        
+
+    }
+
+?>
